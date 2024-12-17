@@ -1,0 +1,9 @@
+pipeline:
+  name: pyannote.audio.pipelines.VoiceActivityDetection
+  params:
+    segmentation: D:\python_project\speaker\model\weights\pynanote\pytorch_model.bin
+
+params:
+  min_duration_off: 0.09791355693027545
+  min_duration_on: 0.05537587440407595
+
