@@ -6,14 +6,14 @@ from FaceNet.face_alignment import mtcnn  # 使用 MTCNN 进行人脸检测
 from FaceNet.models.mobileface import MobileFacenet  # 你的识别模型
 
 # 初始化 MTCNN 人脸检测模型
-mtcnn_model = mtcnn.MTCNN(device='cuda:0', crop_size=(112, 112))
+mtcnn_model = mtcnn.MTCNN(device='cpu', crop_size=(112, 112))
 
 
 # 加载识别模型
 def load_recognition_model(model_path):
     net = MobileFacenet()
-    if torch.cuda.is_available():
-        net = net.cuda()
+
+    net = net.cpu()
     # 加载模型权重
     ckpt = torch.load(model_path)
     net.load_state_dict(ckpt['net_state_dict'])
@@ -41,15 +41,15 @@ def preprocess_image(img):
     return imgs
 
 
-# 提取人脸特征
-def extract_feature(imgs, net):
-    net.eval()
-    with torch.no_grad():
-        if torch.cuda.is_available():
-            imgs = [img.cuda() for img in imgs]
-        features = [net(img).cpu().numpy() for img in imgs]
-        feature = np.concatenate((features[0], features[1]), axis=1)
-    return feature
+# # 提取人脸特征
+# def extract_feature(imgs, net):
+#     net.eval()
+#     with torch.no_grad():
+#         if torch.cuda.is_available():
+#             imgs = [img.cuda() for img in imgs]
+#         features = [net(img).cpu().numpy() for img in imgs]
+#         feature = np.concatenate((features[0], features[1]), axis=1)
+#     return feature
 
 
 # 在图像上显示人脸框和名字
@@ -178,8 +178,3 @@ def main(video_source=0, image_database_paths=[], model_path="path_to_your_model
     cv2.destroyAllWindows()
 
 
-
-if __name__ == "__main__":
-    image_database_paths = [r"D:\python_project\FaceNet\data\test\lu1.jpg", r"D:\python_project\FaceNet\data\test\xu.jpg"]  # 这里是图片库路径
-    model_path = "D:\python_project\FaceNet\models\mobileface.ckpt"  # 这里是模型文件路径
-    main(video_source=0, image_database_paths=image_database_paths, model_path=model_path)

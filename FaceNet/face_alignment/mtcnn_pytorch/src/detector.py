@@ -25,7 +25,7 @@ def detect_faces(image, min_face_size=20.0,
     pnet = PNet()
     rnet = RNet()
     onet = ONet()
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device(cpu)
     device = 'cpu'
     pnet.to(device)
     rnet.to(device)
