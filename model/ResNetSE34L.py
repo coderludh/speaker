@@ -77,12 +77,12 @@ class ResNetSE(nn.Module):
     def forward(self, x):
 
         with torch.no_grad():
-            with torch.cuda.amp.autocast(enabled=False):
-                x = self.torchfb(x)+1e-6
-                if self.log_input: x = x.log()
-                x = self.instancenorm(x).unsqueeze(1).detach()
-                # print(f"Shape after InstanceNorm and unsqueeze: {x.shape}")
-                # x = self.instancenorm(x).detach()
+
+            x = self.torchfb(x)+1e-6
+            if self.log_input: x = x.log()F
+            x = self.instancenorm(x).unsqueeze(1).detach()
+            # print(f"Shape after InstanceNorm and unsqueeze: {x.shape}")
+            # x = self.instancenorm(x).detach()
 
 
 

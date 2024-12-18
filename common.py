@@ -12,7 +12,7 @@ import sqlite3
 from FaceNet.common import *
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 
 # 加载模型权重
 def loadWAV(filename, max_frames, evalmode=True, num_eval=10):

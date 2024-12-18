@@ -35,7 +35,7 @@ class VideoProcessor:
 
         # 加载人脸识别模型
         self.model = load_recognition_model(model_path)
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.model.to(self.device)
         self.model.eval()
 
