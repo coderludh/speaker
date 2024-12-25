@@ -6,8 +6,10 @@ import time
 import json
 from collections import deque
 from datetime import datetime
-
 import time
+
+
+
 
 class VideoRecorder:
     def __init__(self, output_dir='tem/videos', log_file='tem/segments_log.json', segment_duration=10, frame_width=640, frame_height=480, fps=30):
@@ -26,8 +28,8 @@ class VideoRecorder:
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.frame_height)
         self.capture.set(cv2.CAP_PROP_FPS, self.fps)
 
-        if os.path.exists(self.log_file):
-            os.remove(self.log_file)
+        # if os.path.exists(self.log_file):
+        #     os.remove(self.log_file)
         if not os.path.exists(self.log_file):
             with open(self.log_file, 'w') as f:
                 json.dump([], f)
@@ -73,7 +75,7 @@ class VideoRecorder:
 
             # # 在帧上叠加视屏戳
             # cv2.putText(frame, current_time, (10, self.frame_height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
+            cv2.imshow("Recording", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 self.stop()
                 break
@@ -104,10 +106,10 @@ class VideoRecorder:
         if not self.current_frames:
             return
 
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         start_str = datetime.fromtimestamp(self.current_segment_start).strftime("%Y%m%d_%H%M%S")
         end_str = datetime.fromtimestamp(self.current_segment_end).strftime("%Y%m%d_%H%M%S")
-        filename = f"segment_{start_str}_{end_str}.avi"
+        filename = f"segment_{start_str}_{end_str}.mp4"
         filepath = os.path.join(self.output_dir, filename)
 
         out = cv2.VideoWriter(filepath, fourcc, self.fps, (self.frame_width, self.frame_height))
@@ -188,15 +190,18 @@ class VideoRecorder:
         print("已从日志删除视屏")
 
     # 获取内存中的帧
-    def get_recent_memory_buffer(self, duration_seconds=10):
-        current_time = int(time.time())
+    def get_recent_memory_buffer(self, cutoff_time):
         recent_frames = []
 
         with self.lock:
-            while self.memory_buffer:
-                # isoformat数据
-                timestamp_str, frame = self.memory_buffer[0]
-                timestamp = datetime.fromisoformat(timestamp_str)
+            for timestamp, frame in self.memory_buffer:
+                if timestamp <= cutoff_time:
+                    recent_frames.append(frame)
+                else:
+                    break  # 由于是按时间顺序排列，可以提前退出
+            recent_frames.reverse()  # 还原帧的顺序
+
+        return recent_frames
 
     def delete_all_videos(self):
         """
@@ -229,25 +234,24 @@ class VideoRecorder:
 
 
 
-# if __name__ == "__main__":
-#     segmenter = VideoRecorder(
-#         output_dir='tem/videos',
-#         log_file='tem/segments_log.json',
-#         segment_duration=10,  # 每段10秒
-#         frame_width=640,
-#         frame_height=480,
-#         fps=30
-#     )
-#     segmenter.delete_all_videos()
-#     try:
-#         segmenter.start()
-#         print("按下 'q' 键停止录制。")
-#         # 主线程中的循环
-#         # while segmenter.running:
-#         #     time.sleep(1)
-#     except KeyboardInterrupt:
-#         segmenter.stop()
-
+if __name__ == "__main__":
+    segmenter = VideoRecorder(
+        output_dir='tem/videos',
+        log_file='tem/segments_log.json',
+        segment_duration=10,  # 每段10秒
+        frame_width=640,
+        frame_height=480,
+        fps=30
+    )
+    segmenter.delete_all_videos()
+    try:
+        segmenter.start()
+        print("按下 'q' 键停止录制。")
+        # 主线程中的循环
+        # while segmenter.running:
+        #     time.sleep(1)
+    except KeyboardInterrupt:
+        segmenter.stop()
 
 
 

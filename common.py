@@ -175,9 +175,10 @@ def insert_audio_feature_to_db(embedding):
 
 # 插入人脸特征
 def insert_face_features_to_db(embedding):
+    print(11)
     conn = get_db_connection()
     cursor = conn.cursor()
-    embedding_bytes = embedding.cpu().numpy().astype(np.float32).tobytes()
+    embedding_bytes = embedding.astype(np.float32).tobytes()
     cursor.execute("INSERT INTO face_features (feature) VALUES(?)", (embedding_bytes,))
     conn.commit()
     new_id = cursor.lastrowid
@@ -211,10 +212,15 @@ def compare_audio_features(embedding, device=device, top_k=2):
 
 
 def compute_face_similarity(feature1, feature2):
+    print(type(feature1))
+    print(type(feature2))
+    feature2 = feature2.numpy()
     feature1 -= np.mean(feature1, axis=1, keepdims=True)
     feature1 /= np.linalg.norm(feature1, axis=1, keepdims=True)
+    print(1111)
     feature2 -= np.mean(feature2, axis=1, keepdims=True)
     feature2 /= np.linalg.norm(feature2, axis=1, keepdims=True)
+    print(1111)
     # Compute similarity (cosine similarity)
     similarity = np.dot(feature1, feature2.T)
     # Since features are 1 x N, similarity is a scalar
@@ -230,7 +236,7 @@ def compare_face_features(embedding, device=device, top_k=2):
 
     if not rows:
         conn.close()
-        return None, None
+        return None
 
     similarities = []
 

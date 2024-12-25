@@ -79,7 +79,7 @@ class ResNetSE(nn.Module):
         with torch.no_grad():
 
             x = self.torchfb(x)+1e-6
-            if self.log_input: x = x.log()F
+            if self.log_input: x = x.log()
             x = self.instancenorm(x).unsqueeze(1).detach()
             # print(f"Shape after InstanceNorm and unsqueeze: {x.shape}")
             # x = self.instancenorm(x).detach()

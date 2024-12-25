@@ -15,7 +15,7 @@ def load_recognition_model(model_path):
 
     net = net.cpu()
     # 加载模型权重
-    ckpt = torch.load(model_path)
+    ckpt = torch.load(model_path, map_location='cpu')
     net.load_state_dict(ckpt['net_state_dict'])
     net.eval()
     return net
@@ -41,15 +41,16 @@ def preprocess_image(img):
     return imgs
 
 
-# # 提取人脸特征
-# def extract_feature(imgs, net):
-#     net.eval()
-#     with torch.no_grad():
-#         if torch.cuda.is_available():
-#             imgs = [img.cuda() for img in imgs]
-#         features = [net(img).cpu().numpy() for img in imgs]
-#         feature = np.concatenate((features[0], features[1]), axis=1)
-#     return feature
+# 提取人脸特征
+def extract_feature(imgs, net):
+    net.to('cpu')
+    net.eval()
+    with torch.no_grad():
+        if torch.cuda.is_available():
+            imgs = [img.cpu() for img in imgs]
+        features = [net(img).numpy() for img in imgs]
+        feature = np.concatenate((features[0], features[1]), axis=1)
+    return feature
 
 
 # 在图像上显示人脸框和名字
