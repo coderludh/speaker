@@ -17,7 +17,7 @@ import logging
 from collections import defaultdict
 
 class VideoProcessor:
-    def __init__(self, model_path=r'FaceNet\models\mobileface.ckpt', similarity_threshold=0.5, top_k=2, mouth_open_threshold=5.0, face_tracking_threshold=50):
+    def __init__(self, model_path=r'./FaceNet/models/mobileface.ckpt', similarity_threshold=0.5, top_k=2, mouth_open_threshold=5.0, face_tracking_threshold=50):
         """
         初始化视频处理器。
 

@@ -35,7 +35,7 @@ app = FastAPI(title="人脸与语音识别 API", lifespan=lifespan)
 
 # 加载声纹模型
 device = torch.device('cpu')
-audio_model_path = r'model\weights\baseline_lite_ap.model'
+audio_model_path = r'model/weights/baseline_lite_ap.model'
 audio_model = load_model(audio_model_path, device)
 
 # 加载人脸模型
