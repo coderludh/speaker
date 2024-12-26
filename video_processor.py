@@ -54,8 +54,8 @@ class VideoProcessor:
 
 
         # 初始化视频录制器
-        self.recorder = VideoRecorder()
-        self.recorder.start()
+        # self.recorder = VideoRecorder()
+        # self.recorder.start()
 
     def is_speaking(self, landmarks, frame_width, frame_height, previous_distance, threshold=5):
         """
@@ -339,15 +339,15 @@ class VideoProcessor:
 
             # 可视化调试
 
-            if results.multi_face_landmarks:
-                for face_id, bbox in zip(face_ids, bounding_boxes):
-                    x, y, w, h = bbox
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                    cv2.putText(frame, f'ID: {face_id}', (x, y - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-            cv2.imshow('Frame', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # if results.multi_face_landmarks:
+            #     for face_id, bbox in zip(face_ids, bounding_boxes):
+            #         x, y, w, h = bbox
+            #         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            #         cv2.putText(frame, f'ID: {face_id}', (x, y - 10),
+            #                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+            # cv2.imshow('Frame', frame)
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
 
         cap.release()
@@ -438,7 +438,7 @@ class VideoProcessor:
                 print(f"未能提取说话者的平均特征向量。")
 
             # 返回结果
-            print(average_feature)
+            # print(average_feature)
             return average_feature
 
         else:
