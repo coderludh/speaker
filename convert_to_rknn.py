@@ -7,14 +7,22 @@ rknn = RKNN()
 # 配置 RKNN
 print('--> 配置 RKNN')
 rknn.config(
-    reorder_channel='0 1 2',              # 通道顺序，默认 RGB
+
     target_platform='rk3588',             # 目标平台
-    quantized_dtype='asymmetric_quant'     # 量化类型，可选 'dynamic_range_quant' 或 'asymmetric_quant'
+    quantized_dtype='w8a8'     # 量化类型，可选 'dynamic_range_quant' 或 'asymmetric_quant'
 )
 
 # 加载 ONNX 模型
 print('--> 加载 ONNX 模型')
-ret = rknn.load_onnx(model='mobilefacenet.onnx')
+
+
+ret = rknn.load_onnx(
+    model='./FaceNet/models/mobilefacenet.onnx',
+    inputs=['input'],              # 与模型的输入节点名称对应
+    input_size_list=[[1, 3, 112, 112]]  # 指定 (C, H, W)
+)
+
+
 if ret != 0:
     print('Load ONNX model failed!')
     exit(ret)
@@ -22,8 +30,8 @@ if ret != 0:
 # 编译 RKNN 模型，启用量化
 print('--> 编译 RKNN 模型')
 ret = rknn.build(
-    do_quantization=True,
-    dataset='dataset.txt'
+    do_quantization=False,
+
 )
 if ret != 0:
     print('Build RKNN model failed!')
@@ -31,7 +39,7 @@ if ret != 0:
 
 # 导出 RKNN 模型
 print('--> 导出 RKNN 模型')
-ret = rknn.export_rknn('mobilefacenet.rknn')
+ret = rknn.export_rknn('./FaceNet/models/mobilefacenet.rknn')
 if ret != 0:
     print('Export RKNN model failed!')
     exit(ret)

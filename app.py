@@ -9,12 +9,12 @@ from pydub import AudioSegment
 import tempfile
 from FaceNet.common import *
 from typing import List, Optional
-from video_processor import VideoProcessor
+from video_processor_npu import VideoProcessorNPU
 from contextlib import asynccontextmanager
 import asyncio
+from video_processor import VideoProcessor
 
 
-VideoProcessor = VideoProcessor()
 # recorder = VideoRecorder()
 # recorder.start()
 
@@ -135,7 +135,9 @@ async def upload_video(file: UploadFile = File(...)):
             temp_video_path = temp_video_file.name
             temp_video_file.write(video_bytes)
 
-        embedding = VideoProcessor.get_most_talking_person(temp_video_path)
+        print('Processing VideoProcessorNPU')
+
+        embedding = VideoProcessorNPU.get_most_talking_person(temp_video_path)
         os.remove(temp_video_path)
         if embedding is None:
             response = FeatureResponse(
@@ -181,9 +183,9 @@ async def process_face_video(
     similarity_threshold = 0.45
     feature_type = 'video'
     try:
-        video_path = VideoProcessor.merge_video_segments(T_start=start_time, T_end=end_time)
+        video_path = VideoProcessorNPU.merge_video_segments(T_start=start_time, T_end=end_time)
         print(1132146)
-        embedding = VideoProcessor.get_most_talking_person(video_path)
+        embedding = VideoProcessorNPU.get_most_talking_person(video_path)
 
         if embedding is None:
             response = FeatureResponse(
