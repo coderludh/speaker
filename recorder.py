@@ -12,7 +12,7 @@ import time
 
 
 class VideoRecorder:
-    def __init__(self, output_dir='tem/videos', log_file='tem/segments_log.json', segment_duration=10, frame_width=640, frame_height=480, fps=30):
+    def __init__(self, output_dir='tem/videos', log_file='tem/segments_log.json', segment_duration=10, frame_width=320, frame_height=240, fps=15):
         self.output_dir = output_dir
         self.log_file = log_file
         self.segment_duration = segment_duration
@@ -23,10 +23,10 @@ class VideoRecorder:
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        self.capture = cv2.VideoCapture(0)
-        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.frame_width)
-        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.frame_height)
-        self.capture.set(cv2.CAP_PROP_FPS, self.fps)
+        # self.capture = cv2.VideoCapture(0)
+        # self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.frame_width)
+        # self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.frame_height)
+        # self.capture.set(cv2.CAP_PROP_FPS, self.fps)
 
         # if os.path.exists(self.log_file):
         #     os.remove(self.log_file)
@@ -48,6 +48,10 @@ class VideoRecorder:
         self.lock = threading.Lock()
 
     def start(self):
+        self.capture = cv2.VideoCapture(0)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.frame_width)
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.frame_height)
+        self.capture.set(cv2.CAP_PROP_FPS, self.fps)
         self.running = True
         self.thread.start()
         print('开始录制视频')
@@ -56,7 +60,7 @@ class VideoRecorder:
         self.running = False
         self.thread.join()
         self.capture.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
         print('停止录制视频')
 
 
@@ -75,10 +79,10 @@ class VideoRecorder:
 
             # # 在帧上叠加视屏戳
             # cv2.putText(frame, current_time, (10, self.frame_height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            cv2.imshow("Recording", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                self.stop()
-                break
+            # cv2.imshow("Recording", frame)
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     self.stop()
+            #     break
 
             with self.lock:
                 self.current_frames.append(frame.copy())

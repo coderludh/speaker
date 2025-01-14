@@ -43,6 +43,7 @@ def preprocess_image(img):
 
 # 提取人脸特征
 def extract_feature(imgs, net):
+
     net.to('cpu')
     net.eval()
     with torch.no_grad():

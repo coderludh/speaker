@@ -9,7 +9,7 @@ import soundfile
 from pydub import AudioSegment
 from io import BytesIO
 import sqlite3
-from FaceNet.common import *
+import numpy as np
 
 
 device = torch.device('cpu')

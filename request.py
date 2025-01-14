@@ -4,7 +4,7 @@ import time
 import requests
 start_time = time.time()
 # 设置 URL 和文件路径
-url = 'http://127.0.0.1:8000/upload_video'
+url = 'http://127.0.0.1:8080/upload_video'
 file_path = r"./tem/videos/1.mp4"
 
 # 打开文件并发送请求

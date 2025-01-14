@@ -11,12 +11,11 @@ from PIL import Image
 import ffmpeg
 import os
 import subprocess
-from FaceNet.common import *
 from recorder import VideoRecorder
 import logging
 from collections import defaultdict
-from rknnlite.api import RKNNLite
 
+from common import *
 
 class VideoProcessorNPU:
     def __init__(self, rknn_path=r'./FaceNet/models/mobilefacenet.rknn', similarity_threshold=0.5, top_k=2, mouth_open_threshold=5.0, face_tracking_threshold=50):
@@ -70,7 +69,8 @@ class VideoProcessorNPU:
         识别身份，返回前两个相似的特征。
         """
         imgs = preprocess_image(aligned_face)
-        feature = extract_feature(imgs, self.model)
+        feature = extract_feature(imgs, self.ret)
+
         top_matches = compare_face_features(feature, device=self.device, top_k=self.top_k)
         return top_matches
 
@@ -388,6 +388,7 @@ class VideoProcessorNPU:
             aligned_face = get_aligned_face(image_path=None, rgb_pil_image=face_image_pil)
             if aligned_face is None:
                 continue
+            print("已对齐")
 
             # # 保存对齐后的人脸图像到临时路径
             # aligned_image_path = f"aligned_temp_{frame_number}.jpg"
@@ -395,9 +396,13 @@ class VideoProcessorNPU:
 
             # 预处理图像
             imgs = preprocess_image(aligned_face)
-
+            # print("开始提取特征")
+            # print(type(imgs))
+            # print(imgs[1].shape)
             # 提取特征
             feature = extract_feature(imgs, self.rknn)
+            print('特征已经提取')
+
             speaker_features.append(feature)
 
         cap.release()
@@ -409,6 +414,7 @@ class VideoProcessorNPU:
 
         # 计算所有特征的平均值
         avg_feature = np.mean(speaker_features, axis=0)
+        print('avg_feature')
 
         return avg_feature
 
@@ -440,41 +446,41 @@ class VideoProcessorNPU:
             return None
 
 
-if __name__=="__main__":
-
-    def compute_face_similarity(feature1, feature2):
-        print(type(feature1))
-        print(type(feature2))
-        feature1 -= np.mean(feature1, axis=1, keepdims=True)
-        feature1 /= np.linalg.norm(feature1, axis=1, keepdims=True)
-        print(1111)
-        feature2 -= np.mean(feature2, axis=1, keepdims=True)
-        feature2 /= np.linalg.norm(feature2, axis=1, keepdims=True)
-        print(1111)
-        # Compute similarity (cosine similarity)
-        similarity = np.dot(feature1, feature2.T)
-        # Since features are 1 x N, similarity is a scalar
-        similarity = similarity[0][0]
-        return similarity
-
-    recognizer = VideoProcessorNPU()
-    video_path = r"E:\python_project\speaker\tem\videos\segment_20241225_170317_20241225_170327.mp4"  # 替换为实际视频路径
-    net = load_recognition_model(r'FaceNet\models\mobileface.ckpt')
-    # 获取说话者的平均特征
-    img = r"D:\python_project\speaker\FaceNet\data\detected_faces\132465.jpg"
-    result = recognizer.get_most_talking_person(video_path)
-    if result is not None:
-        print("result.shape", result.shape)
-        imgs = preprocess_image(img)
-        feature2 = extract_feature(imgs=imgs, net = net)
-        print("feature2.shape", feature2.shape)
-        s = compute_face_similarity(result,feature2)
-
-
-        if result is None:
-            print("未检测到任何说话者。")
-        else:
-            # print(f"说话者的平均特征向量: {result}")
-            print(s)
-
-    else: print("error 1111")
+# if __name__=="__main__":
+#
+#     def compute_face_similarity(feature1, feature2):
+#         print(type(feature1))
+#         print(type(feature2))
+#         feature1 -= np.mean(feature1, axis=1, keepdims=True)
+#         feature1 /= np.linalg.norm(feature1, axis=1, keepdims=True)
+#         print(1111)
+#         feature2 -= np.mean(feature2, axis=1, keepdims=True)
+#         feature2 /= np.linalg.norm(feature2, axis=1, keepdims=True)
+#         print(1111)
+#         # Compute similarity (cosine similarity)
+#         similarity = np.dot(feature1, feature2.T)
+#         # Since features are 1 x N, similarity is a scalar
+#         similarity = similarity[0][0]
+#         return similarity
+#
+#     recognizer = VideoProcessorNPU()
+#     video_path = r"E:\python_project\speaker\tem\videos\segment_20241225_170317_20241225_170327.mp4"  # 替换为实际视频路径
+#     net = load_recognition_model(r'FaceNet\models\mobileface.ckpt')
+#     # 获取说话者的平均特征
+#     img = r"D:\python_project\speaker\FaceNet\data\detected_faces\132465.jpg"
+#     result = recognizer.get_most_talking_person(video_path)
+#     if result is not None:
+#         print("result.shape", result.shape)
+#         imgs = preprocess_image(img)
+#         feature2 = extract_feature(imgs=imgs, net = net)
+#         print("feature2.shape", feature2.shape)
+#         s = compute_face_similarity(result,feature2)
+#
+#
+#         if result is None:
+#             print("未检测到任何说话者。")
+#         else:
+#             # print(f"说话者的平均特征向量: {result}")
+#             print(s)
+#
+#     else: print("error 1111")
